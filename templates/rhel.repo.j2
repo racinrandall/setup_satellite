@@ -1,0 +1,31 @@
+[RHEL]
+name=Red Hat Enterprise Linux 7
+gpgcheck=1
+baseurl=file://{{ rhel_mount }}
+enabled=1
+
+
+[Satellite]
+name=Red Hat Satellite 6
+gpgcheck=1
+baseurl=file://{{ sat_mount }}
+enabled=1
+
+
+[RHSCL]
+name=Red Hat Satellite 6
+gpgcheck=1
+baseurl=file://{{ sat_mount }}/RHSCL
+enabled=1
+
+[Ansible]
+name=Red Hat Ansible 2
+gpgcheck=1
+baseurl=file:///opt/rhel-7-server-ansible-2-rpms
+enabled=1
+
+[SAT_Maintenance]
+name=Red Hat Satellite Maintenance 6
+gpgcheck=1
+baseurl=file:///opt/rhel-7-server-satellite-maintenance-6-rpms
+enabled=1

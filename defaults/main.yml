@@ -1,0 +1,29 @@
+---
+device: /dev/sdb
+vg_name: vg_satellite
+disks:
+  - name: var_cache_pulp
+    size: 30G
+    mount: /var/cache/pulp
+  - name: var_lib_pulp
+    size: 300G
+    mount: /var/lib/pulp
+  - name: var_lib_mongodb
+    size: 50G
+    mount: /var/lib/mongodb
+  - name: var_lib_pgsql
+    size: 10G
+    mount: /var/lib/pgsql
+  - name: var_spool_squid
+    size: 10G
+    mount: /var/spool/squid
+
+temp_disk:
+  - name: mnt_tmp
+    size: 10G
+    mount: /mnt/tmp
+sat_iso: sat-6.7.iso
+rhel_iso: rhel7.8.iso
+sat_mount: /media/sat
+rhel_mount: /media/rhel
+tar_file: yum_repos.tar.gz

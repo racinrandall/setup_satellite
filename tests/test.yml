@@ -1,0 +1,5 @@
+---
+- hosts: sat
+  become: true
+  roles:
+    - setup_satellite

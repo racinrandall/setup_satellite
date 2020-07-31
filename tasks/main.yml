@@ -1,0 +1,103 @@
+---
+- name: create volume group
+  lvg:
+    vg: "{{ vg_name }}"
+    pvs: "{{ device }}"
+
+- name: create logical volumes
+  lvol:
+    vg: "{{ vg_name }}"
+    lv: "lv_{{ item.name }}"
+    size: "{{ item.size }}"
+  loop: "{{ disks }}"
+
+- name: create filesystems on LVs
+  filesystem:
+    fstype: xfs
+    dev: "/dev/mapper/{{ vg_name }}-lv_{{ item.name }}"
+  loop: "{{ disks }}"  
+
+- name: mount the filesystems
+  mount:
+    path: "{{ item.mount }}"
+    src: "/dev/mapper/{{ vg_name }}-lv_{{ item.name }}"
+    fstype: xfs
+    state: mounted
+  loop: "{{ disks }}"
+
+- name: create temp logical volume to put Satellite ISO
+  lvol:
+    vg: "{{ vg_name }}"
+    lv: "lv_{{ item.name }}"
+    size: "{{ item.size }}"
+  loop: "{{ temp_disk }}"
+
+- name: create temp filesystems
+  filesystem:
+    fstype: xfs
+    dev: "/dev/mapper/{{ vg_name }}-lv_{{ item.name }}"
+  loop: "{{ temp_disk }}"  
+
+- name: mount the filesystems
+  mount:
+    path: "{{ item.mount }}"
+    src: "/dev/mapper/{{ vg_name }}-lv_{{ item.name }}"
+    fstype: xfs
+    state: mounted
+  loop: "{{ temp_disk }}"  
+
+- name: copy Satellite ISO to host
+  copy:
+    src: "{{ sat_iso }}"
+    dest: "{{ item.mount }}"
+  loop: "{{ temp_disk }}"  
+
+- name: copy RHEL ISO to host
+  copy:
+    src: "{{ rhel_iso }}"
+    dest: "{{ item.mount }}"
+  loop: "{{ temp_disk }}"  
+
+- name: mount satelite disk
+  mount:
+    path: "{{ sat_mount }}"
+    src: "{{ item.mount }}/{{ sat_iso }}"
+    fstype: iso9660
+    opts: ro,noauto
+    state: mounted
+  loop: "{{ temp_disk }}"  
+
+- name: mount RHEL disk
+  mount:
+    path: "{{ rhel_mount }}"
+    src: "{{ item.mount }}/{{ rhel_iso }}"
+    fstype: iso9660
+    opts: ro,noauto
+    state: mounted
+  loop: "{{ temp_disk }}"  
+
+- name: remove all existing repo files
+  file:
+    path: /etc/yum.repos.d/redhat.repo
+    state: absent
+- name: Create Repo File for RHEL and Sat content
+  template:
+    src: rhel.repo.j2
+    dest: /etc/yum.repos.d/rhel.repo
+
+- name: Import RPM GPG Key
+  rpm_key:
+    state: present
+    key: /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+- name: Unarchive additional needed repos
+  unarchive:
+    src: "{{ tar_file }}"
+    dest: /opt/
+
+- name: update RHEL packages
+  yum:
+    name: satellite
+    state: latest
+    update_cache: yes
+
