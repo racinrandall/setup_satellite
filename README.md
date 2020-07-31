@@ -1,38 +1,23 @@
-Role Name
+Setup Satellite
 =========
 
-A brief description of the role goes here.
+This role is designed to setup a disconnected Satellite server.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+For this role to work, you must provide a RHEL 7 Server, and Satellite 6 install DVDs.  Those ISO files should be placed in the files/ directory.
+As of right now you will also need a tarball of ansible and sat-maintenance repos.  Until I refine exactly which packages are needed, the repos are too big to put in this role.
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+You must override the default varialbes for sat_iso and rhel_iso to reflect the iso files you placed in the files/ directory.  You will also need to update the tar_file repo to reflect the tarball you create of the extra required repos.
+Default varialbes for size of filesystems are created in the defaults/main.yml.  These reflect the current disconnected install guide for Satellite at the time the role was created.  It is assumed your system already has a /var/log with at least 10G as required per the Satellite install guide.
 
-Dependencies
-------------
-
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
-
-Example Playbook
-----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
-
-License
--------
-
-BSD
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Created by: Charles Randall
+email: chrandal@redhat.com
